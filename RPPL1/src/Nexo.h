@@ -66,7 +66,7 @@ int DarBajaTrabajo(eTrabajo listaT[], int tamT, eServicio listaS[], int tamS, eB
  * @param tamS
  * @return 1 si la modificacion fue exitosa o 0 si no hay datos para modificar
  */
-int ModificarTrabajo(eTrabajo listaT[], int tamT, eServicio listaS[], int tamS, eBicicleta listaB[], int tamB, eCliente listaCs[], int tamC);
+int ModificarTrabajo(eTrabajo listaT[], int tamT, eServicio listaS[], int tamS, eBicicleta listaB[], int tamB, eCliente listaC[], int tamC);
 
 /**
  * @fn void MostrarUnTrabajo(eTrabajo, eServicio[], int)
@@ -271,13 +271,87 @@ int InicializarAxuliarFormaDePaga(eAuxiliar auxiliar[], eTrabajo listaT[], int t
  */
 void ContadorAuxiliarFormaDePaga(eAuxiliar auxiliar[], eTrabajo listaT[], int tamT, eFormaPago listaP[], int tamP);
 
+/**
+ * @fn int MaximoAuxiliarFormaDePago(eAuxiliar[], eTrabajo[], int, eFormaPago[], int)
+ * @brief
+ *
+ * @param auxiliar
+ * @param listaT
+ * @param tamT
+ * @param listaP
+ * @param tamP
+ * @return
+ */
 int MaximoAuxiliarFormaDePago(eAuxiliar auxiliar[], eTrabajo listaT[], int tamT, eFormaPago listaP[], int tamP);
 
+/**
+ * @fn int ClienteConMasTrabajos(eTrabajo[], int, eCliente[], int)
+ * @brief recorre la lista de trabajos y clientes buscando el cliente que tenga mas trabajos
+ *
+ * @param listaT
+ * @param tamB
+ * @param listaC
+ * @param tamC
+ * @return el cliente con mas trabajos
+ */
 int ClienteConMasTrabajos(eTrabajo listaT[],int tamB, eCliente listaC[], int tamC);
 
+/**
+ * @fn int FiltroDeClientes(eTrabajo[], int, eBicicleta[], int, eCliente[], int, eServicio[], int)
+ * @brief
+ *
+ * @param listaT
+ * @param tamT
+ * @param listaB
+ * @param tamB
+ * @param listaC
+ * @param tamC
+ * @param listaS
+ * @param tamS
+ * @return
+ */
 int FiltroDeClientes(eTrabajo listaT[], int tamT, eBicicleta listaB[],int tamB, eCliente listaC[],int tamC, eServicio listaS[], int tamS);
 
-void MostrarTodosUnCliente(eCliente Cliente, int tamC, int contador, float acumulador);
+/**
+ * @fn void ContadorYAcumuladorTrabajos(eCliente[], int, eTrabajo[], int, eServicio[], int, int[], float[])
+ * @brief Cuenta los trabajos y acumula el precio por cada trabajo segun el cliente
+ *
+ * @param listaC
+ * @param tamC
+ * @param listaT
+ * @param tamT
+ * @param listaS
+ * @param tamS
+ * @param contador
+ * @param acumulador
+ */
+void ContadorYAcumuladorTrabajos(eCliente listaC[], int tamC, eTrabajo listaT[], int tamT, eServicio listaS[], int tamS, int contador[], float acumulador[]);
 
-int MostrarTodosClientes(eCliente listaC[], int tamC, eTrabajo listaT[], int tamT, eServicio listaS[], int tamS, eBicicleta listaB[], int tamB);
+/**
+ * @fn void MostrarUnClienteConTrabajos(eCliente, int, int, float)
+ * @brief muestra un cliente con su trabajo
+ *
+ * @param Cliente
+ * @param tamC
+ * @param contador
+ * @param acumulador
+ */
+void MostrarUnClienteConTrabajos(eCliente Cliente, int tamC, int contador, float acumulador);
+
+/**
+ * @fn int MostrarTodosClientesConTrabajos(eCliente[], int, eTrabajo[], int, eServicio[], int, eBicicleta[], int)
+ * @brief Muestra todos los clientes con la cantidad de trabajos y el precio a pagar y tiene un filtro para que el usuario elija si quiere
+ * ver los servicios del cliente con mas trabajos o filtrarlo por ID
+ *
+ * @param listaC
+ * @param tamC
+ * @param listaT
+ * @param tamT
+ * @param listaS
+ * @param tamS
+ * @param listaB
+ * @param tamB
+ * @return 1 si pudo mostrar un cliente 0 si no pudo
+ */
+int MostrarTodosClientesConTrabajos(eCliente listaC[], int tamC, eTrabajo listaT[], int tamT, eServicio listaS[], int tamS, eBicicleta listaB[], int tamB);
 #endif /* NEXO_H_ */

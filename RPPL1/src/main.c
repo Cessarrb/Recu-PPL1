@@ -34,7 +34,7 @@ int main(void)
 	HardcodeoDatosBicicleta(listaB, TB);
 	HardcodeoDatosServicios(listaS, TS);
 	HardcodeoDatosFormaPago(listaP, TP);
-	HardcodeoDatosClientes(listaC, 4);
+	HardcodeoDatosClientes(listaC, TC);
 
 
 	do
@@ -105,7 +105,7 @@ int main(void)
 				}
 				break;
 			case 8:
-				if(!ServicioConMasTrabajosRealizado(listaT, TT, listaS, TS))
+				if(!ServicioConMasTrabajosRealizado(listaT, TT, listaS, TS)) //El o los servicios
 				{
 					printf("No hay datos cargados.\n");
 				}
@@ -132,7 +132,10 @@ int main(void)
 				}
 				break;
 			case 13:
-				MostrarTodosClientes(listaC, TC, listaT, TT, listaS, TS, listaB, TB);
+				if(!MostrarTodosClientesConTrabajos(listaC, TC, listaT, TT, listaS, TS, listaB, TB))
+				{
+					printf("No hay datos cargados.\n");
+				}
 				break;
 		}
 	}while(opcion!=14);

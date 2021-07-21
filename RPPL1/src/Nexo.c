@@ -84,7 +84,7 @@ int DarBajaTrabajo(eTrabajo listaT[], int tamT, eServicio listaS[], int tamS, eB
     return rtn;
 }
 
-int ModificarTrabajo(eTrabajo listaT[], int tamT, eServicio listaS[], int tamS, eBicicleta listaB[], int tamB, eCliente listaCs[], int tamC)
+int ModificarTrabajo(eTrabajo listaT[], int tamT, eServicio listaS[], int tamS, eBicicleta listaB[], int tamB, eCliente listaC[], int tamC)
 {
 	int id;
 	char respuesta;
@@ -94,7 +94,7 @@ int ModificarTrabajo(eTrabajo listaT[], int tamT, eServicio listaS[], int tamS, 
 	int index;
 
 
-	if(MostrarTrabajos(listaT, tamT, listaS, tamS, listaB, tamB, listaCs, tamC))
+	if(MostrarTrabajos(listaT, tamT, listaS, tamS, listaB, tamB, listaC, tamC))
 	{
 		flag=1;
 	}
@@ -124,9 +124,10 @@ int ModificarTrabajo(eTrabajo listaT[], int tamT, eServicio listaS[], int tamS, 
 			{
 				printf("1-BICICLETA\n");
 				printf("2-SERVICIO\n");
-				printf("3-SALIR\n");
+				printf("3-CLIENTE");
+				printf("4-SALIR\n");
 				rtn=2;
-				opcion=GetIntConRango("Ingrese una opcion: ", "Error", 1, 3);
+				opcion=GetIntConRango("Ingrese una opcion: ", "Error", 1, 4);
 				switch(opcion)
 				{
 					case 1:
@@ -140,6 +141,10 @@ int ModificarTrabajo(eTrabajo listaT[], int tamT, eServicio listaS[], int tamS, 
 						rtn=1;
 						break;
 						//case 2 id con la tabla de los metodos de pago
+					case 3:
+						MostrarTodosLosClientes(listaC, tamC);
+						listaT[index].idCliente=GetIntConRango("Ingrese el ID del nuevo cliente: ", "ERROR", 1, 4);
+						break;
 				}
 			}
 		}
@@ -151,38 +156,22 @@ int ModificarTrabajo(eTrabajo listaT[], int tamT, eServicio listaS[], int tamS, 
 int MostrarUnTrabajo(eTrabajo trabajo, eServicio listaS[], int tamS, eBicicleta listaB[], int tamB, eCliente listaC[], int tamC)
 {
 	int rtn=0;
-	char descripcionServicio[30];
-	char marcaBicicleta[30];
 	int indexServicio;
 	int indexBicicleta;
-	int rodado;
-	char color[30];
 	int indexCliente;
 
 	if(listaS != NULL && tamS >0)
 	{
 		indexServicio=BuscarServicioPorId(listaS, tamS, trabajo.idServicio);
-		if(indexServicio!=-1)
-		{
-			strcpy(descripcionServicio, listaS[indexServicio].descripcion);
-		}
-		else
-		{
-			strcpy(descripcionServicio, "ERROR");
-		}
-
 		indexBicicleta=BuscarBiciPorId(listaB, tamB, trabajo.idBicicleta);
-		if(indexBicicleta!=-1)
-		{
-			strcpy(marcaBicicleta, listaB[indexBicicleta].marca);
-			strcpy(color, listaB[indexBicicleta].color);
-			rodado=listaB[indexBicicleta].rodadoBicicleta;
-		}
 		indexCliente=BuscarClientePorId(listaC, tamC, trabajo.idCliente);
 
-
-		printf("%10d %20s %15s %10d %10s %10s %8d-%d-%d\n", trabajo.id, listaC[indexCliente].nombre, marcaBicicleta, rodado, color, descripcionServicio,
-														trabajo.fecha.dia, trabajo.fecha.mes, trabajo.fecha.anio);
+		if(indexServicio != -1 && indexBicicleta != -1 && indexCliente != -1)
+		{
+			printf("%10d %20s %15s %10d %10s %10s %10.2f %8d-%d-%d\n", trabajo.id, listaC[indexCliente].nombre, listaB[indexBicicleta].marca,
+															listaB[indexBicicleta].rodadoBicicleta, listaB[indexBicicleta].color, listaS[indexServicio].descripcion,
+															listaS[indexServicio].precio, trabajo.fecha.dia, trabajo.fecha.mes, trabajo.fecha.anio);
+		}
 		rtn=1;
 	}
 
@@ -202,9 +191,9 @@ int MostrarTrabajos(eTrabajo listaT[], int tamT, eServicio listaS[], int tamS, e
 			{
 				if(rtn==0) //uso la variable rtn para mostrar el encabezado
 				{
-					printf("%10s %20s %15s %10s %10s %10s %15s\n", "ID TRABAJO", "NOMBRE CLIENTE", "MARCA", "RODADO", "COLOR", "SERVICIO", "FECHA");
+					printf("%10s %20s %15s %10s %10s %10s %10s %15s\n", "ID TRABAJO", "NOMBRE CLIENTE", "MARCA", "RODADO", "COLOR", "SERVICIO", "PRECIO", "FECHA");
 				}
-				MostrarUnTrabajo(listaT[i], listaS, tamS, listaB, tamB,listaC,tamC);
+				MostrarUnTrabajo(listaT[i], listaS, tamS, listaB, tamB, listaC, tamC);
 				rtn=1;
 			}
 		}
@@ -225,7 +214,9 @@ int MostrarServiciosPrestados(eTrabajo listaT[], int tamT, eServicio listaS[], i
 	int i;
 	int j;
 	int rtn=0;
+
 	InicializarAxuliar(listaAux, listaT, tamT, listaS, tamS);
+
 	ContadorAcumuladorAxuliar(listaAux, listaT, tamT, listaS, tamS);
 
 	if(listaT !=NULL && listaS != NULL && tamT>0)
@@ -462,39 +453,24 @@ int BicicletasRojasEligidasPorUsiario(eTrabajo listaT[], int tamT, eServicio lis
 int MostrarUnTrabajOConFormaDePago(eTrabajo trabajo, eServicio listaS[], int tamS, eBicicleta listaB[], int tamB, eFormaPago listaP[], int tamP)
 {
 	int rtn=0;
-	char descripcionServicio[30];
-	char marcaBicicleta[30];
 	int indexServicio;
 	int indexBicicleta;
 	int indexFormaDePago;
-	int rodado;
-	char color[30];
 
 	if(listaS != NULL && tamS >0)
 	{
 		indexServicio=BuscarServicioPorId(listaS, tamS, trabajo.idServicio);
-		if(indexServicio!=-1)
-		{
-			strcpy(descripcionServicio, listaS[indexServicio].descripcion);
-		}
-		else
-		{
-			strcpy(descripcionServicio, "ERROR");
-		}
-
 		indexBicicleta=BuscarBiciPorId(listaB, tamB, trabajo.idBicicleta);
-		if(indexBicicleta!=-1)
-		{
-			strcpy(marcaBicicleta, listaB[indexBicicleta].marca);
-			strcpy(color, listaB[indexBicicleta].color);
-			rodado=listaB[indexBicicleta].rodadoBicicleta;
-		}
-
 		indexFormaDePago=BuscarPagoPorId(listaP, tamP, trabajo.idFormaDePago);
 
-		printf("%2d %15s %10d %10s %10s %20s %15s %20s %8d-%d-%d\n", trabajo.id, marcaBicicleta, rodado, color, descripcionServicio, listaP[indexFormaDePago].descripcionPago,
-														listaP[indexFormaDePago].bancarizado, listaP[indexFormaDePago].numOperacion,
-														trabajo.fecha.dia, trabajo.fecha.mes, trabajo.fecha.anio);
+		if(indexServicio != -1 && indexBicicleta != -1 && indexFormaDePago != -1)
+		{
+		printf("%2d %15s %10d %10s %10s %10.2f %20s %15s %20s %8d-%d-%d\n", trabajo.id, listaB[indexBicicleta].marca, listaB[indexBicicleta].rodadoBicicleta,
+																			listaB[indexBicicleta].color, listaS[indexServicio].descripcion,
+																			listaS[indexServicio].precio, listaP[indexFormaDePago].descripcionPago,
+																			listaP[indexFormaDePago].bancarizado, listaP[indexFormaDePago].numOperacion,
+																			trabajo.fecha.dia, trabajo.fecha.mes, trabajo.fecha.anio);
+		}
 		rtn=1;
 	}
 
@@ -514,7 +490,7 @@ int ListaTrabajosConFormaDePago(eTrabajo listaT[], int tamT, eServicio listaS[],
 			{
 				if(rtn==0) //uso la variable rtn para mostrar el encabezado
 				{
-					printf("%2s %15s %10s %10s %10s %20s %15s %20s %15s\n", "ID", "MARCA", "RODADO", "COLOR", "SERVICIO", "FORMA DE PAGO", "BANCARIZADO", "NUM. DE OPERACION", "FECHA");
+					printf("%2s %15s %10s %10s %10s %10s %20s %15s %20s %15s\n", "ID", "MARCA", "RODADO", "COLOR", "SERVICIO", "PRECIO", "FORMA DE PAGO", "BANCARIZADO", "NUM. DE OPERACION", "FECHA");
 				}
 				MostrarUnTrabajOConFormaDePago(listaT[i], listaS, tamS, listaB, tamB, listaP, tamP);
 				rtn=1;
@@ -545,7 +521,7 @@ int ListaTrabajoFormaDePagoMasUtilizada(eTrabajo listaT[], int tamT, eServicio l
 			{
 				if(rtn==0) //uso la variable rtn para mostrar el encabezado
 				{
-					printf("%2s %15s %10s %10s %10s %20s %15s %20s %15s\n", "ID", "MARCA", "RODADO", "COLOR", "SERVICIO", "FORMA DE PAGO", "BANCARIZADO", "NUM. DE OPERACION", "FECHA");
+					printf("%2s %15s %10s %10s %10s %10s %20s %15s %20s %15s\n", "ID", "MARCA", "RODADO", "COLOR", "SERVICIO", "PRECIO", "FORMA DE PAGO", "BANCARIZADO", "NUM. DE OPERACION", "FECHA");
 				}
 				MostrarUnTrabajOConFormaDePago(listaT[j], listaS, tamS, listaB, tamB, listaP, tamP);
 				rtn=1;
@@ -653,20 +629,23 @@ int FiltroDeClientes(eTrabajo listaT[], int tamT, eBicicleta listaB[],int tamB, 
 	int flag=0;
 
 
-	printf("1-Filtrar por cliente con mas trabajos y mostrar sus servicios\n");
+	printf("\n1-Filtrar por cliente con mas trabajos y mostrar sus servicios\n");
 	printf("2-Ingresar ID del cliente y listar trabajos con sus servicios\n");
 	printf("3-Salir\n");
-	opcion=GetInt("Ingrese una opcion: ", "Error");
+	opcion=GetIntConRango("Ingrese una opcion: ", "Error", 1, 3);
 
 	if(opcion==1)
 	{
 		IdClienteMasTrabajos = ClienteConMasTrabajos(listaT, tamT, listaC, tamC);
 		flag=1;
 	}
-	else if(opcion==2)
+	else
 	{
-		IdClienteMasTrabajos=GetIntConRango("Ingrese el ID del cliente: ", "Error", 1, 4);
-		flag=1;
+		if(opcion==2)
+		{
+			IdClienteMasTrabajos=GetIntConRango("Ingrese el ID del cliente: ", "Error", 1, 4);
+			flag=1;
+		}
 	}
 
 	if(flag==1)
@@ -683,8 +662,10 @@ int FiltroDeClientes(eTrabajo listaT[], int tamT, eBicicleta listaB[],int tamB, 
 				indexServicio=BuscarServicioPorId(listaS, tamS, listaT[j].idServicio);
 				if(listaT[j].idCliente == IdClienteMasTrabajos && listaT[j].idBicicleta == listaB[i].idBicicleta)
 				{
-					printf("%10d %20s %15d %15d %15s %10d %10s %10s %10.2f\n", listaT[j].idCliente, listaC[indexCliente].nombre, listaC[indexCliente].dni,listaC[indexCliente].telefono,
-																	listaB[i].marca, listaB[i].rodadoBicicleta, listaB[i].color, listaS[indexServicio].descripcion, listaS[indexServicio].precio);
+					printf("%10d %20s %15d %15d %15s %10d %10s %10s %10.2f\n", listaT[j].idCliente, listaC[indexCliente].nombre,
+																				listaC[indexCliente].dni,listaC[indexCliente].telefono,
+																				listaB[i].marca, listaB[i].rodadoBicicleta, listaB[i].color,
+																				listaS[indexServicio].descripcion, listaS[indexServicio].precio);
 					rtn=1;
 				}
 			}
@@ -693,19 +674,10 @@ int FiltroDeClientes(eTrabajo listaT[], int tamT, eBicicleta listaB[],int tamB, 
 	return rtn;
 }
 
-void MostrarTodosUnCliente(eCliente Cliente, int tamC, int contador, float acumulador)
-{
-
-	printf("%10d %20s %10d %15d %20d %20.2f\n", Cliente.id, Cliente.nombre, Cliente.dni, Cliente.telefono, contador, acumulador);
-}
-
-int MostrarTodosClientes(eCliente listaC[], int tamC, eTrabajo listaT[], int tamT, eServicio listaS[], int tamS, eBicicleta listaB[], int tamB)
+void ContadorYAcumuladorTrabajos(eCliente listaC[], int tamC, eTrabajo listaT[], int tamT, eServicio listaS[], int tamS, int contador[], float acumulador[])
 {
 	int i;
 	int j;
-	int rtn=0;
-	int contador[tamC];
-	float acumulador[tamC];
 	int index;
 
 	for(i=0;i<tamC;i++)
@@ -722,6 +694,23 @@ int MostrarTodosClientes(eCliente listaC[], int tamC, eTrabajo listaT[], int tam
 			}
 		}
 	}
+}
+
+void MostrarUnClienteConTrabajos(eCliente Cliente, int tamC, int contador, float acumulador)
+{
+
+	printf("%10d %20s %10d %15d %20d %20.2f\n", Cliente.id, Cliente.nombre, Cliente.dni, Cliente.telefono, contador, acumulador);
+}
+
+int MostrarTodosClientesConTrabajos(eCliente listaC[], int tamC, eTrabajo listaT[], int tamT, eServicio listaS[], int tamS, eBicicleta listaB[], int tamB)
+{
+	int i;
+	int j;
+	int rtn=0;
+	int contador[tamC];
+	float acumulador[tamC];
+
+	ContadorYAcumuladorTrabajos(listaC, tamC, listaT, tamT, listaS, tamS, contador, acumulador);
 
 	if (listaT != NULL && tamT>0)
 	{
@@ -729,23 +718,27 @@ int MostrarTodosClientes(eCliente listaC[], int tamC, eTrabajo listaT[], int tam
 		{
 			for(j=0;j<tamT;j++)
 			{
-				if(rtn==0) //uso la variable rtn para mostrar el encabezado
+				if(listaT[j].isEmpty == OCUPADO)
 				{
-					printf("%10s %20s %10s %15s %20s %20s\n", "ID CLIENTE","NOMBRE", "DNI", "TELEFONO", "CANT. TRABAJOS", "PRECIO TOTAL");
-				}
-				if(listaC[i].id == listaT[j].idCliente)
-				{
-					//printf("%10d %20s %10d %15d %20d %20.2f\n", listaC[i].id, listaC[i].nombre, listaC[i].dni, listaC[i].telefono, contador[i], acumulador[i]);
-					MostrarTodosUnCliente(listaC[i], tamC, contador[i], acumulador[i]);
-					rtn=1;
-					break;
+					if(rtn==0)
+					{
+						printf("%10s %20s %10s %15s %20s %20s\n", "ID CLIENTE","NOMBRE", "DNI", "TELEFONO", "CANT. TRABAJOS", "PRECIO TOTAL");
+					}
+					if(listaC[i].id == listaT[j].idCliente)
+					{
+						MostrarUnClienteConTrabajos(listaC[i], tamC, contador[i], acumulador[i]);
+						rtn=1;
+						break;
+					}
 				}
 			}
 		}
 	}
 
-	FiltroDeClientes(listaT, tamT, listaB, tamB, listaC, tamC, listaS, tamS);
-
+	if(rtn==1)
+	{
+		FiltroDeClientes(listaT, tamT, listaB, tamB, listaC, tamC, listaS, tamS);
+	}
 
 	return rtn;
 }
